@@ -26,11 +26,17 @@ jobs:
         run: |
           echo "Searching for gradlew..."
           find dream -name gradlew -type f -print
+
       - name: Build AAB
         run: |
-          cd dream
-          gradle bundleRelease --no-daemon
-  
+          GRADLEW=$(find dream -type f -name gradlew | head -1)
+          if [ -z "$GRADLEW" ]; then
+            echo "gradlew not found"
+            exit 1
+          fi
+          chmod +x "$GRADLEW"
+          "$GRADLEW" bundleRelease --no-daemon
+
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
