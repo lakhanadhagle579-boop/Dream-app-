@@ -17,7 +17,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-       - name: Unzip DREAM project
+      - name: Unzip DREAM project
         run: |
           mkdir dream
           unzip -q DREAM_Android_Project_v9.zip -d dream
@@ -29,7 +29,7 @@ jobs:
 
       - name: Build AAB
         run: |
-          GRADLEW=$(find dream -name gradlew -type f | head -n 1)
+          GRADLEW=$(find dream -name gradlew -type f | head -1)
           chmod +x "$GRADLEW"
           cd "$(dirname "$GRADLEW")"
           ./gradlew bundleRelease --no-daemon
