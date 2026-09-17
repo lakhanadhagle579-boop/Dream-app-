@@ -17,7 +17,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Unzip DREAM project
+       - name: Unzip DREAM project
         run: |
           mkdir dream
           unzip -q DREAM_Android_Project_v9.zip -d dream
