@@ -1,0 +1,41 @@
+name: Build DREAM Android
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Unzip DREAM project
+        run: |
+          mkdir dream
+          unzip -q DREAM_Android_Project_v9.zip -d dream
+
+      - name: Find Gradle project
+        run: |
+          echo "Searching for gradlew..."
+          find dream -name gradlew -type f -print
+
+      - name: Build AAB
+        run: |
+          GRADLEW=$(find dream -name gradlew -type f | head -n 1)
+          chmod +x "$GRADLEW"
+          cd "$(dirname "$GRADLEW")"
+          ./gradlew bundleRelease --no-daemon
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: DREAM-AAB
+          path: dream/**/build/outputs/bundle/**/*.aab
