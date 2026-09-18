@@ -1,37 +1,49 @@
-name: Build DREAM AAB
+            name: Build DREAM AAB
+ 
+            on:
+               workflow_dispatch:
+               push:
+               branches: [ main ]
 
-on:
-  workflow_dispatch:
-  push:
-    branches: [ main ]
+             jobs:
+             build:
+              runs-on: ubuntu-latest
+ 
+            steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+   
+            - name: Set up JDK
+              uses: actions/setup-java@v4
+              with:
+              distribution: temurin
+              java-version: '17'
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+            - name: Set up Android SDK
+              uses: android-actions/setup-android@v4
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+            - name: Set up Gradle
+              uses: gradle/actions/setup-gradle@v4
+              with:
+              gradle-version: '8.10.2'
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+            - name: Extract Android project
+              run: |
+               unzip -q DREAM_Android_Project_v9.zip -d dream_project
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v4
+            - name: Build release AAB
+              run: |
+               GRADLEW=$(find dream_project -name gradlew -type f | head -1)
+                if [ -z "$GRADLEW" ]; then
+                  echo "gradlew not found"
+                exit 1
+                  fi
+                 chmod +x "$GRADLEW"
+               cd "$(dirname "$GRADLEW")"
+                     ./gradlew :app:bundleRelease --no-daemon
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.10.2'
-
-      - name: Build release AAB
-        run: ./gradlew :app:bundleRelease --no-daemon
-
-      - name: Upload AAB artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: DREAM-release-aab
-          path: app/build/outputs/bundle/release/*.aab
+               - name: Upload AAB artifact
+                 uses: actions/upload-artifact@v4
+                  with:
+                 name: DREAM-release-aab
+                 path: dream_project/**/app/build/outputs/bundle/release/*.aab
