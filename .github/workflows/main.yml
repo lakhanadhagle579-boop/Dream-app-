@@ -1,48 +1,41 @@
-           name: Build DREAM AAB
+name: Build DREAM AAB
 
-           on:
-           workflow_dispatch:
-           push:
-           branches:
-           - main
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
-           jobs:
-           build:
-           runs-on: ubuntu-latest
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-           steps:
-             - name: Checkout
-               uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-             - name: Set up JDK
-               uses: actions/setup-java@v4
-               with:
-                   distribution: temurin
-               java-version: '17'
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-             - name: Find Android project
-               run: |
-                 PROJECT_DIR=$(find . -name settings.gradle -o -name settings.gradle.kts | head -1)
-                  if [ -z "$PROJECT_DIR" ]; then
-                 echo "Android Gradle project not found"
-                 exit 1
-                 fi
-                 PROJECT_DIR=$(dirname "$PROJECT_DIR")
-                 echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-                 echo "Found project at: $PROJECT_DIR"
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-                         - name: Set up Gradle
-                 uses: gradle/actions/setup-gradle@v4
-                  with:
-                  gradle-version: '8.10.2'
+      - name: Build AAB
+        run: |
+          GRADLEW=$(find . -type f -name gradlew -print -quit)
+          if [ -z "$GRADLEW" ]; then
+            echo "gradlew not found"
+            exit 1
+          fi
+          cd "$(dirname "$GRADLEW")"
+          chmod +x ./gradlew
+          ./gradlew bundleRelease --no-daemon
 
-                      - name: Build AAB
-                        run: |
-                     cd "$PROJECT_DIR"
-                      gradle bundleRelease --no-daemon
-
-                   - name: Upload AAB
-                     uses: actions/upload-artifact@v4
-                    with:
-                   name: DREAM-AAB
-               path: '**/build/outputs/bundle/release/*.aab' 
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: DREAM-AAB
+          path: '**/build/outputs/bundle/release/*.aab'
