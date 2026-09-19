@@ -1,6 +1,6 @@
            name: Build DREAM AAB
 
-         on:
+           on:
            workflow_dispatch:
            push:
            branches:
