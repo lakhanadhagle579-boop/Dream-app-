@@ -20,12 +20,14 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Extract Android Project
+        run: |
+          mkdir -p dream
+          unzip -q DREAM_Android_Project_v9.zip -d dream
 
       - name: Build AAB
         run: |
-          GRADLEW=$(find . -type f -name gradlew -print -quit)
+          GRADLEW=$(find dream -type f -name gradlew -print -quit)
           if [ -z "$GRADLEW" ]; then
             echo "gradlew not found"
             exit 1
