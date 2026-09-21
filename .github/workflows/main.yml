@@ -24,16 +24,10 @@ jobs:
         run: |
           unzip -q DREAM_Android_Project_v9.zip -d dream_project
 
-      - name: Find Gradle Project
+      - name: Check ZIP Contents
         run: |
-          GRADLEW=$(find dream_project -type f -name gradlew -print -quit)
-          if [ -z "$GRADLEW" ]; then
-            echo "gradlew not found inside ZIP"
-            exit 1
-          fi
-          echo "Found: $GRADLEW"
-          echo "GRADLEW=$GRADLEW" >> $GITHUB_ENV
-
+         echo "===== ZIP CONTENTS ====="
+         unzip -l DREAM_Android_Project_v9.zip
       - name: Build AAB
         run: |
           chmod +x "$GRADLEW"
