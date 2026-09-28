@@ -28,22 +28,20 @@ jobs:
         run: |
          echo "===== ZIP CONTENTS ====="
          unzip -l DREAM_Android_Project_v9.zip
+      
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+        gradle-version: '8.7'
+
       - name: Build AAB
         run: |
-          run: |
-             GRADLEW=$(find dream_project -name gradlew -type f | head -1)
-           if [ -z "$GRADLEW" ]; then
-          echo "gradlew not found"
-            find dream_project -maxdepth 4 -type f | head -100
-           exit 1
-            fi
-          chmod +x "$GRADLEW"
-          cd "$(dirname "$GRADLEW")"
-           ./gradlew bundleRelease --no-daemon
+         cd dream_project/DREAM_Android_Project_v9
+         gradle bundleRelease --no-daemon
 
-           - name: Upload AAB
-          uses: actions/upload-artifact@v4
-          with:
-          name: DREAM-AAB
-          path: 'dream_project/**/build/outputs/bundle/release/*.aab'
+       - name: Upload AAB
+         uses: actions/upload-artifact@v4
+         with:
+         name: DREAM-AAB
+         path: 'dream_project/**/build/outputs/bundle/release/*.aab'
           
