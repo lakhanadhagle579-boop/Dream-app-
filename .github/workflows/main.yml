@@ -22,8 +22,7 @@ jobs:
 
       - name: Extract Android Project
         run: |
-          mkdir -p dream_project
-          unzip -q DREAM_Android_Project.zip -d dream_project
+          mkdir -p DREAM_Android_Project_v9.zip -d dream_project
 
       - name: Find Gradle Project
         run: |
