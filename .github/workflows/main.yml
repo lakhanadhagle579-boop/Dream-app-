@@ -1,3 +1,4 @@
+           
 name: Build DREAM AAB
 
 on:
@@ -20,27 +21,23 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Extract Android Project
         run: |
           mkdir -p dream_project
           unzip -q DREAM_Android_Project_v9.zip -d dream_project
 
-      - name: Find Gradle Project
-        run: |
-          GRADLEW=$(find dream_project -name gradlew -type f | head -1)
-          echo "GRADLEW=$GRADLEW"
-          chmod +x "$GRADLEW"
-
       - name: Build AAB
         run: |
-          GRADLEW=$(find dream_project -name gradlew -type f | head -1)
-          PROJECT_DIR=$(dirname "$GRADLEW")
+          BUILD_FILE=$(find dream_project -name build.gradle -type f | head -1)
+          PROJECT_DIR=$(dirname "$BUILD_FILE")
           cd "$PROJECT_DIR"
-          ./gradlew bundleRelease --no-daemon
+          gradle bundleRelease --no-daemon
 
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
           name: DREAM-AAB
           path: dream_project/**/build/outputs/bundle/release/*.aab
-          
