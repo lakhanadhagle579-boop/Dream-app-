@@ -29,6 +29,11 @@ jobs:
           mkdir -p dream_project
           unzip -q DREAM_Android_Project_v9.zip -d dream_project
 
+      - name: Enable AndroidX
+        run: |
+          echo "android.useAndroidX=true" >> dream_project/DREAM_Android_Project_v9/gradle.properties
+          echo "android.enableJetifier=true" >> dream_project/DREAM_Android_Project_v9/gradle.properties
+
       - name: Build AAB
         run: |
           BUILD_FILE=$(find dream_project -name build.gradle -type f | head -1)
